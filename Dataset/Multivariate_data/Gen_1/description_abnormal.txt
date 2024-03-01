@@ -1,0 +1,2 @@
+start: 150, end: 200, reason: Attributes 1 and 3 are inversely correlated, such that when attribute 1 rises, attribute 3 falls. However, in the specified interval, attribute 1 and attribute 3 are positively correlated. 
+start: 350, end: 400, reason: Attributes 1 and 3 are inversely correlated, such that when attribute 1 rises, attribute 3 falls. However, in the specified interval, attribute 1 rises but attribute 3 fluctuates fluctuates in a small range. 

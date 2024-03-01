@@ -1,0 +1,1 @@
+start: 17210, end: 17260, reason: The normal data maintains a consistent oscillation with values ranging from approximately 0.15 to 0.3. The abnormal data features a spike that dramatically exceeds the usual range, reaching a peak that is significantly higher than the average values observed.

@@ -1,0 +1,1 @@
+start: 38500, end: 38800, reason: In each period, the magnitude of the difference between the two peaks is at most half the value of the larger peak. In the interval above, the second peak is too small compared to the first peak.

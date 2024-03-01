@@ -1,0 +1,1 @@
+Attribute 1 exhibits an upward trend while attribute 3 demonstrates a downward trend, inversely correlated so that as attribute 1 rises, attribute 3 falls, whereas attribute 2 varies within a range from -2.5 to 2.5. 
