@@ -44,7 +44,6 @@ def match_anomalies_with_descriptions(time_series_data, descriptions):
 # Load your data
 df = pd.read_csv('/home/tri/llms-anomaly-detection/TSAD-NUS/Dataset/Univariate_data/145_UCR_Anomaly_Lab2Cmac011215EPG1_5000_17210_17260/145_UCR_Anomaly_Lab2Cmac011215EPG1_5000_17210_17260.txt', header=None, names=['value'])
 df = df[:5000]
-print(df)
 abnormal_descriptions = load_abnormal_descriptions('/home/tri/llms-anomaly-detection/TSAD-NUS/Dataset/Univariate_data/145_UCR_Anomaly_Lab2Cmac011215EPG1_5000_17210_17260/description_abnormal.txt')
 normal_description = load_normal_descriptions('/home/tri/llms-anomaly-detection/TSAD-NUS/Dataset/Univariate_data/145_UCR_Anomaly_Lab2Cmac011215EPG1_5000_17210_17260/description_normal.txt')
 
