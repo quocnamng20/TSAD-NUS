@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import torch
+from tqdm import tqdm
 
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from datasets import Dataset
@@ -33,7 +34,7 @@ def construct_multi_general_test(df, normal_description):
         
         # Construct the instruction text
         instruction = (f"Consider the following attributes from a time series data: {full_description}. "
-                       "Given the values provided, please classify which interval is 'normal', which interval is 'abnormal'. Please provide your reasoning based on the attributes' values and their expected pattern.\n")
+                       "Given the values provided, there may have several intervals. Please classify which interval is 'normal', which interval is 'abnormal'. Please provide your reasoning based on the attributes' values and their expected pattern.\n")
         
         # Append the constructed texts to their respective lists
         instructions.append(instruction)
@@ -65,7 +66,7 @@ def construct_uni_general_test(df, normal_description):
         
         # Construct the instruction text
         instruction = (f"Consider the following attributes from a time series data interval: {full_description}. "
-                       "Given the values provided, please classify which interval is 'normal', which interval is 'abnormal'. Please provide your reasoning based on the values and their expected pattern.\n")
+                       "Given the values provided, there may have several intervals. Please classify which interval is 'normal', which interval is 'abnormal'. Please provide your reasoning based on the values and their expected pattern.\n")
         
         # Append the constructed texts to their respective lists
         instructions.append(instruction)
@@ -74,11 +75,13 @@ def construct_uni_general_test(df, normal_description):
     return instructions, answers
 
 # Function to generate predictions
-def generate_predictions(model, tokenizer, instructions):
+def generate_predictions(model, tokenizer, instructions, device):
     predictions = []
-    for instruction in instructions:
-        input_ids = tokenizer.encode(instruction, return_tensors="pt")
-        output = model.generate(input_ids=input_ids, max_length=100, num_return_sequences=1)
+    for instruction in tqdm(instructions):
+        # Encode the instruction and send to the same device as the model
+        input_ids = tokenizer.encode(instruction, return_tensors="pt").to(device)
+        # Generate output and move back to CPU for decoding, if necessary
+        output = model.generate(input_ids=input_ids, max_length=1024, num_return_sequences=1)
         prediction_text = tokenizer.decode(output[0], skip_special_tokens=True)
         predictions.append(prediction_text)
     return predictions
@@ -110,10 +113,15 @@ def generate_testset(mode):
 
 
 def main(): 
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}")
 
     # Initialize model and tokenizer
-    model = AutoModelForCausalLM.from_pretrained("facebook/opt-350m")
-    tokenizer = AutoTokenizer.from_pretrained("facebook/opt-350m")
+    checkpoint_path = "./model_checkpoint"
+    tokenizer = AutoTokenizer.from_pretrained(checkpoint_path)
+    model = AutoModelForCausalLM.from_pretrained(checkpoint_path)
+    model.to(device)
+    model.eval()
 
     # Construct dataset
     instructions = []
@@ -121,11 +129,11 @@ def main():
 
     dataset = generate_testset('uni')
     # Generate predictions
-    predictions = generate_predictions(model, tokenizer, dataset['question'])
+    predictions = generate_predictions(model, tokenizer, dataset['question'], device)
 
     # Print predictions
-    # for prediction in predictions:
-    #     print(prediction)
+    for i, prediction in enumerate(predictions):
+        print(f"Prediction {i+1}: {prediction}")
 
 if __name__ == "__main__":
     main()
