@@ -50,10 +50,30 @@ dataframe = pd.DataFrame({'question': instruction, 'answer': outputs})
 dataframe.to_csv('/home/tri/llms-anomaly-detection/TSAD-NUS/Dataset/training.csv', sep='\t')
 
 dataset = Dataset.from_pandas(dataframe)
+train_dataset = Dataset.from_pandas(dataframe)
+# Define training arguments
+
+training_args = TrainingArguments(
+    output_dir='./results',          # The output directory where the model predictions and checkpoints will be written.
+    num_train_epochs=3,              # Total number of training epochs
+    per_device_train_batch_size=8,   # Batch size per device during training
+    per_device_eval_batch_size=8,    # Batch size for evaluation
+    warmup_steps=500,                # Number of warmup steps for learning rate scheduler
+    weight_decay=0.01,               # Strength of weight decay
+    logging_dir='./logs',            # Directory for storing logs
+    logging_steps=10,
+    save_strategy="epoch",           # Save strategy to save a model every epoch
+    args=training_args,
+)
+
 trainer = SFTTrainer(
     model,
-    train_dataset=dataset,
+    train_dataset=train_dataset,
     formatting_func=formatting_prompts_func,
 )
+
+model_path = "./model_checkpoint"
+model.save_pretrained(model_path)
+tokenizer.save_pretrained(model_path)
 
 trainer.train()
